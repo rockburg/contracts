@@ -25,7 +25,7 @@ contract VenueRenderer is IVenueRenderer, Strings {
         parts[6] = Strings.uintToString(venue.visitorCap);
 
         // solhint-disable-next-line quotes
-        parts[7] = '</text><text class="cls-5" transform="translate(38.4 334.04)">Cost</text><text class="cls-6" transform="translate(372.8 334.04)">&#xa7;';
+        parts[7] = ',000</text><text class="cls-5" transform="translate(38.4 334.04)">Cost</text><text class="cls-6" transform="translate(372.8 334.04)">&#xa7;';
         parts[8] = Strings.uintToString(venue.dollarCost);
 
         // solhint-disable-next-line quotes
