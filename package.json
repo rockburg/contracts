@@ -26,6 +26,7 @@
         "base64-sol": "^1.0.1"
     },
     "scripts": {
+        "compile": "hardhat compile",
         "test": "hardhat test",
         "deploy:test": "hardhat run --network mumbai scripts/deploy.js",
         "deploy:prod": "hardhat run --network polygon scripts/deploy.js"
