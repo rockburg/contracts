@@ -21,7 +21,7 @@ contract StudioRenderer is IStudioRenderer, Strings {
         parts[4] = studio.location;
 
         // solhint-disable-next-line quotes
-        parts[5] = '</text><text class="cls-5" transform="translate(38.4 334.04)">Cost</text><text class="cls-6" transform="translate(270.54 334.04)">&sect;';
+        parts[5] = '</text><text class="cls-5" transform="translate(38.4 334.04)">Cost</text><text class="cls-6" transform="translate(270.54 334.04)">&#xa7;';
         parts[6] = Strings.uintToString(studio.dollarCost);
 
         // solhint-disable-next-line quotes
