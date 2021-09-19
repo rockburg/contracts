@@ -12,6 +12,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 contract RockburgNFT is Ownable, ERC721, ERC721Enumerable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    Counters.Counter private randomnessNonce;
 
     struct Musician {
         string name;
@@ -28,10 +29,10 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable {
     constructor() ERC721("Rockburg", "RCKBRG") {}
 
     /**
-     * @dev Creates a new token with the specified metadata and returns its identifier.
+     * @dev Creates a new artist token with pseudo-randomized stats and returns its identifier.
      * For simplicity, we do not check wether the caller implements ERC721Receiver.
     */
-    function mintWithStats(string calldata name, string calldata role, uint256 skillPoints, uint256 egoPoints, uint256 lookPoints, uint256 creativePoints) public returns (uint256) {
+    function mintArtist(string calldata name, string calldata role) public returns (uint256) {
         _tokenIds.increment();
 
         uint256 tokenId = _tokenIds.current();
@@ -39,14 +40,20 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable {
         Musician storage musician = musicians[tokenId];
         musician.name = name;
         musician.role = role;
-        musician.skillPoints = skillPoints;
-        musician.egoPoints = egoPoints;
-        musician.lookPoints = lookPoints;
-        musician.creativePoints = creativePoints;
+        musician.skillPoints = randNum(abi.encodePacked(name, role)) % 100;
+        musician.egoPoints = randNum(abi.encodePacked(name, role)) % 100;
+        musician.lookPoints = randNum(abi.encodePacked(name, role)) % 100;
+        musician.creativePoints = randNum(abi.encodePacked(name, role)) % 100;
 
         _mint(_msgSender(), tokenId);
 
         return tokenId;
+    }
+
+    function getMusician(uint256 tokenId) public view virtual returns (Musician memory) {
+        require(_exists(tokenId), "token does not exist");
+
+        return musicians[tokenId];
     }
 
     /**
@@ -96,6 +103,15 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable {
         output = string(abi.encodePacked("data:application/json;base64,", json));
 
         return output;
+    }
+
+    /**
+     * @dev Returns a pseudo-random `uint256`, based off a provided seed, the sender, block number, block difficulty, and an internal nonce.
+    */
+    function randNum(bytes memory seed) internal returns (uint256) {
+        randomnessNonce.increment();
+
+        return uint256(keccak256(abi.encodePacked(seed, msg.sender, block.number, block.difficulty, randomnessNonce.current())));
     }
 
     /**
