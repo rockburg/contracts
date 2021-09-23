@@ -31,7 +31,7 @@ describe('RockburgNFT', function () {
 	})
 
 	it('correctly generates metadata for a musician', async function () {
-		const mintTx = await contract.mintArtist('Shpigford', 'Coder')
+		const mintTx = await contract.mintArtist('Shpigford', 0)
 
 		// wait until the transaction is mined
 		await mintTx.wait()
@@ -42,8 +42,7 @@ describe('RockburgNFT', function () {
 
 		expect(metadata.name).to.equal('Musician #1')
 		expect(metadata.description).to.equal('Rockburg is a WIP card game on the blockchain.')
-
-		expect(generatedSVG).to.equal(generateMusicianSVG(artistStats.name, artistStats.role, artistStats.skillPoints, artistStats.egoPoints, artistStats.lookPoints, artistStats.creativePoints))
+		expect(generatedSVG).to.equal(generateMusicianSVG(artistStats.name, 'Vocalist', artistStats.skillPoints, artistStats.egoPoints, artistStats.lookPoints, artistStats.creativePoints))
 	})
 
 	it('correctly generates metadata for a venue', async function () {
