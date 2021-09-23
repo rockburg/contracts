@@ -1,12 +1,14 @@
 require('dotenv').config()
-require('solidity-coverage')
-require('@nomiclabs/hardhat-waffle')
-require('@nomiclabs/hardhat-etherscan')
 
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
-module.exports = {
+import { task, HardhatUserConfig } from 'hardhat/config'
+import '@typechain/hardhat'
+import '@nomiclabs/hardhat-ethers'
+import '@nomiclabs/hardhat-waffle'
+import '@nomiclabs/hardhat-solhint'
+import '@nomiclabs/hardhat-etherscan'
+import 'solidity-coverage'
+
+const config: HardhatUserConfig = {
 	solidity: {
 		version: '0.8.4',
 		settings: {
@@ -33,3 +35,5 @@ module.exports = {
 		apiKey: process.env.ETHERSCAN_API_KEY,
 	},
 }
+
+export default config

@@ -1,19 +1,24 @@
-const { use, expect } = require('chai')
-const { ethers } = require('hardhat')
-const { solidity } = require('ethereum-waffle')
+import { Contract } from '@ethersproject/contracts'
 
-use(solidity)
+import { ethers, waffle } from 'hardhat'
+import chai from 'chai'
+const { expect } = chai
+const { deployContract } = waffle
 
 const renderers = ['Musician', 'Venue', 'Studio']
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import RockburgNFTArtifact from '../artifacts/contracts/RockburgNFT.sol/RockburgNFT.json'
+import { RockburgNFT } from '../typechain/RockburgNFT'
 
 describe('Band test', function () {
-	let owner
-	let addr1
+	let owner: SignerWithAddress
+	let addr1: SignerWithAddress
+	let addrs: SignerWithAddress[]
 
-	let contract
+	let contract: RockburgNFT
 
 	beforeEach(async () => {
-		;[owner, addr1, addr2, ...addrs] = await ethers.getSigners()
+		;[owner, addr1, ...addrs] = await ethers.getSigners()
 		const rendererAddresses = await Promise.all(
 			renderers.map(async type => {
 				const Renderer = await ethers.getContractFactory(`${type}Renderer`)
@@ -24,9 +29,7 @@ describe('Band test', function () {
 			})
 		)
 
-		const RockburgNFT = await ethers.getContractFactory('RockburgNFT')
-		contract = await RockburgNFT.deploy(...rendererAddresses)
-		await contract.deployed()
+		contract = (await deployContract(owner, RockburgNFTArtifact, rendererAddresses)) as RockburgNFT
 	})
 
 	describe('Test formBand function', () => {
