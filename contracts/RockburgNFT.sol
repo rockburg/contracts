@@ -3,18 +3,18 @@ pragma solidity ^0.8.0;
 
 // RockburgNFT contract by m1guelpf.eth
 
-import "./data/Types.sol";
-import "base64-sol/base64.sol";
-import "./interfaces/IVenueRenderer.sol";
-import "./interfaces/IStudioRenderer.sol";
-import "./interfaces/IMusicianRenderer.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import './data/Types.sol';
+import 'base64-sol/base64.sol';
+import './interfaces/IVenueRenderer.sol';
+import './interfaces/IStudioRenderer.sol';
+import './interfaces/IMusicianRenderer.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts/utils/Counters.sol';
+import '@openzeppelin/contracts/token/ERC721/ERC721.sol';
+import '@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol';
+import '@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol';
 
-import "hardhat/console.sol";
+import 'hardhat/console.sol';
 
 contract RockburgNFT is Ownable, ERC721, ERC721Enumerable, ERC721Holder {
 	using Counters for Counters.Counter;
@@ -36,7 +36,7 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable, ERC721Holder {
 		address musicianRenderer,
 		address venueRenderer,
 		address studioRenderer
-	) ERC721("Rockburg", "RCKBRG") {
+	) ERC721('Rockburg', 'RCKBRG') {
 		_musicianRenderer = musicianRenderer;
 		_venueRenderer = venueRenderer;
 		_studioRenderer = studioRenderer;
@@ -137,44 +137,47 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable, ERC721Holder {
 	}
 
 	function getMusician(uint256 tokenId) public view virtual returns (Musician memory) {
-		require(_exists(tokenId), "token does not exist");
-		require(_tokenTypes[tokenId] == Types.MUSICIAN, "token is not a musician");
+		require(_exists(tokenId), 'token does not exist');
+		require(_tokenTypes[tokenId] == Types.MUSICIAN, 'token is not a musician');
 
 		return _musicians[tokenId];
 	}
 
 	function getVenue(uint256 tokenId) public view virtual returns (Venue memory) {
-		require(_exists(tokenId), "token does not exist");
-		require(_tokenTypes[tokenId] == Types.VENUE, "token is not a venue");
+		require(_exists(tokenId), 'token does not exist');
+		require(_tokenTypes[tokenId] == Types.VENUE, 'token is not a venue');
 
 		return _venues[tokenId];
 	}
 
 	function getStudio(uint256 tokenId) public view virtual returns (Studio memory) {
-		require(_exists(tokenId), "token does not exist");
-		require(_tokenTypes[tokenId] == Types.STUDIO, "token is not a studio");
+		require(_exists(tokenId), 'token does not exist');
+		require(_tokenTypes[tokenId] == Types.STUDIO, 'token is not a studio');
 
 		return _studios[tokenId];
 	}
 
 	function getBand(uint256 tokenId) public view virtual returns (Band memory) {
-		require(_exists(tokenId), "token does not exist");
-		require(_tokenTypes[tokenId] == Types.BAND, "token is not a band");
+		require(_exists(tokenId), 'token does not exist');
+		require(_tokenTypes[tokenId] == Types.BAND, 'token is not a band');
 
 		return _bands[tokenId];
 	}
 
 	function getSong(uint256 tokenId) public view virtual returns (Song memory) {
-		require(_exists(tokenId), "token does not exist");
-		require(_tokenTypes[tokenId] == Types.SONG, "token is not a song");
+		require(_exists(tokenId), 'token does not exist');
+		require(_tokenTypes[tokenId] == Types.SONG, 'token is not a song');
 
 		return _songs[tokenId];
+	}
+
+	function checkArtistRole(uint256 tokenId, Role expectedRole) internal view returns (bool) {
+		return _musicians[tokenId].role == expectedRole;
 	}
 
 	/**
 	 * @dev Form a band
 	 */
-
 	function formBand(
 		string calldata name,
 		string calldata bandType,
@@ -185,11 +188,17 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable, ERC721Holder {
 		uint256 drumsId
 	) public returns (Band memory) {
 		// Check the type of the token
-		require(_tokenTypes[vocalistId] == Types.MUSICIAN, "vocalistId is not an artist");
-		require(_tokenTypes[leadGuitarId] == Types.MUSICIAN, "leadGuitarId is not an artist");
-		require(_tokenTypes[rhythmGuitarId] == Types.MUSICIAN, "rhythmGuitarId is not an artist");
-		require(_tokenTypes[bassId] == Types.MUSICIAN, "bassId is not an artist");
-		require(_tokenTypes[drumsId] == Types.MUSICIAN, "drumsId is not an artist");
+		require(_tokenTypes[vocalistId] == Types.MUSICIAN, 'vocalistId is not an artist');
+		require(_tokenTypes[leadGuitarId] == Types.MUSICIAN, 'leadGuitarId is not an artist');
+		require(_tokenTypes[rhythmGuitarId] == Types.MUSICIAN, 'rhythmGuitarId is not an artist');
+		require(_tokenTypes[bassId] == Types.MUSICIAN, 'bassId is not an artist');
+		require(_tokenTypes[drumsId] == Types.MUSICIAN, 'drumsId is not an artist');
+
+		require(checkArtistRole(vocalistId, Role.VOCALIST), 'vocalistId is not a Vocalist');
+		require(checkArtistRole(leadGuitarId, Role.LEAD_GUITAR), 'leadGuitarId is not a Lead Guitar');
+		require(checkArtistRole(rhythmGuitarId, Role.RHYTHM_GUITAR), 'rhythmGuitarId is not a Rhythm Guitar');
+		require(checkArtistRole(bassId, Role.BASS), 'bassId is not a Bass');
+		require(checkArtistRole(drumsId, Role.DRUMS), 'drumsId is not a Drums');
 
 		// transfer all those artist to the contract itself, this will also automatically
 		// check that the send owns the token
@@ -213,8 +222,8 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable, ERC721Holder {
 	}
 
 	function disbandBand(uint256 bandId) public {
-		require(_exists(bandId), "token does not exist");
-		require(_tokenTypes[bandId] == Types.BAND, "token is not a band");
+		require(_isApprovedOrOwner(msg.sender, bandId), "You don't own the band");
+		require(_tokenTypes[bandId] == Types.BAND, 'token is not a band');
 
 		// bind artist to band
 		Band storage _band = _bands[bandId];
@@ -247,7 +256,7 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable, ERC721Holder {
 	 * @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
 	 */
 	function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-		require(_exists(tokenId), "token does not exist");
+		require(_exists(tokenId), 'token does not exist');
 
 		Types tokenType = _tokenTypes[tokenId];
 
@@ -261,7 +270,7 @@ contract RockburgNFT is Ownable, ERC721, ERC721Enumerable, ERC721Holder {
 			return IStudioRenderer(_studioRenderer).constructTokenURI(_studios[tokenId], tokenId);
 		}
 
-		return "TBD";
+		return 'TBD';
 	}
 
 	/**
